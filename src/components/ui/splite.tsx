@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
-import { Application } from '@splinetool/runtime'
+import { useState } from 'react'
 
 interface SplineSceneProps {
   scene: string
@@ -7,37 +6,36 @@ interface SplineSceneProps {
 }
 
 export function SplineScene({ scene, className }: SplineSceneProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    if (!canvasRef.current) return
-
-    const app = new Application(canvasRef.current)
-    
-    app.load(scene).then(() => {
-      setIsLoading(false)
-    }).catch((error) => {
-      console.error('Failed to load Spline scene:', error)
-      setIsLoading(false)
-    })
-
-    return () => {
-      app.dispose()
+  // Convert splinecode URL to embed URL
+  const getEmbedUrl = (sceneUrl: string) => {
+    // If it's already an embed URL, use it directly
+    if (sceneUrl.includes('my.spline.design')) {
+      return sceneUrl
     }
-  }, [scene])
+    // Convert prod.spline.design URL to embed format
+    const match = sceneUrl.match(/prod\.spline\.design\/([^/]+)/)
+    if (match) {
+      return `https://my.spline.design/${match[1]}/`
+    }
+    return sceneUrl
+  }
 
   return (
     <div className={`relative ${className || ''}`}>
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/50">
           <span className="loader"></span>
         </div>
       )}
-      <canvas 
-        ref={canvasRef} 
-        className="w-full h-full"
+      <iframe
+        src={getEmbedUrl(scene)}
+        className="w-full h-full border-0"
         style={{ opacity: isLoading ? 0 : 1, transition: 'opacity 0.3s' }}
+        onLoad={() => setIsLoading(false)}
+        title="3D Scene"
+        allow="autoplay; fullscreen"
       />
     </div>
   )
