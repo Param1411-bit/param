@@ -1,117 +1,190 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Brain, Sun, Droplets, AlertTriangle } from "lucide-react";
+import { Brain, Sun, Droplets, BarChart3 } from "lucide-react";
+import { motion } from "framer-motion";
 
 const projects = [
   {
     icon: Brain,
-    title: "AI-Based Electrical Fault Detection",
-    period: "Dec 2024 – Present",
-    description: "ML-based fault classification system processing 10,000+ simulation datapoints with automated MATLAB pipelines.",
+    title: "AI-Based Fault Detection & Predictive Analysis System",
+    period: "Python, ML, MATLAB",
+    description: "Machine learning models for predictive maintenance with data engineering and analytical insights.",
     achievements: [
-      "90%+ prediction accuracy with waveform-feature models",
-      "30-40% reduction in diagnosis time",
-      "Automated MATLAB data pipelines"
+      "Developed classification and anomaly detection models",
+      "Performed data cleaning, preprocessing, and feature extraction",
+      "Generated performance insights using supervised learning"
     ],
-    tags: ["MATLAB", "Machine Learning", "Power Systems", "AI"]
-  },
-  {
-    icon: Sun,
-    title: "Fuzzy-Logic MPPT Controller",
-    period: "Jan 2024 – Nov 2024",
-    description: "Optimized fuzzy-logic MPPT controller for grid-connected PV systems validated across 50+ irradiance scenarios.",
-    achievements: [
-      "12-15% increased tracking efficiency vs P&O",
-      "25% improved transient response stability",
-      "50+ irradiance scenario validations"
-    ],
-    tags: ["Simulink", "MPPT", "Solar PV", "Control Systems"]
+    tags: ["Python", "Machine Learning", "MATLAB", "Data Engineering"]
   },
   {
     icon: Droplets,
-    title: "IoT Residual Chlorine Sensor",
-    period: "Aug 2024 – Nov 2024",
-    description: "Capacitive sensing system with ML-based calibration using 2,000+ readings and ESP8266 cloud logging.",
+    title: "Residual Chlorine Detection – Data Monitoring & Analytics",
+    period: "IoT, Python, Excel",
+    description: "IoT-based water quality monitoring with dashboards and time-series analysis.",
     achievements: [
-      "±5% accuracy in lab tests",
-      "40% reduction in manual testing",
-      "Real-time cloud data logging"
+      "Processed IoT datasets for rural water quality trends",
+      "Created dashboards, line graphs, and anomaly triggers",
+      "Developed alert thresholds and time-series interpretations"
     ],
-    tags: ["IoT", "ESP8266", "Machine Learning", "Sensors"]
+    tags: ["IoT", "Python", "Excel", "Data Visualization"]
   },
   {
-    icon: AlertTriangle,
-    title: "Harmful Gas Detection System",
-    period: "Aug 2023 – Dec 2023",
-    description: "Smart India Hackathon finalist project - MQ sensor system with GSM alerts for septic tank safety.",
+    icon: Sun,
+    title: "MPPT Performance Modelling & Optimization",
+    period: "MATLAB, Data Analysis",
+    description: "PV performance analysis with statistical summaries and energy-efficiency optimization.",
     achievements: [
-      "MQ-4/MQ-136 sensor integration",
-      "Real-time GSM threshold alerts",
-      "Low-cost scalable prototype"
+      "Analyzed PV performance under dynamic irradiance",
+      "Created statistical summaries and efficiency graphs",
+      "Evaluated algorithms for controller optimization"
     ],
-    tags: ["Arduino", "IoT", "Gas Sensors", "GSM"]
+    tags: ["MATLAB", "Simulink", "Solar PV", "Optimization"]
+  },
+  {
+    icon: BarChart3,
+    title: "Business Analytics & Lead Management",
+    period: "Excel, Power BI",
+    description: "End-to-end lead analytics and conversion funnel optimization for business development.",
+    achievements: [
+      "Managed leads and evaluated conversion funnels",
+      "Prepared datasets, reports, and strategic insights",
+      "Analyzed market trends and customer needs"
+    ],
+    tags: ["Power BI", "Excel", "Analytics", "Business Development"]
   }
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15
+    }
+  }
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 50, scale: 0.9 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 100,
+      damping: 15
+    }
+  }
+};
+
 export function Projects() {
   return (
-    <section id="projects" className="py-24 relative">
+    <section id="projects" className="py-24 relative overflow-hidden">
       <div className="absolute inset-0 grid-background opacity-30" />
       
+      {/* Animated orbs */}
+      <motion.div 
+        className="absolute top-20 right-20 w-72 h-72 bg-primary/10 rounded-full blur-[100px]"
+        animate={{ 
+          x: [0, 50, 0],
+          y: [0, -30, 0],
+        }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+      />
+      
       <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-16">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+        >
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             Featured <span className="gradient-text">Projects</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Engineering solutions with measurable impact in renewable energy, IoT, and predictive analytics.
+            Data-driven solutions in analytics, ML, IoT, and business intelligence.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+        <motion.div 
+          className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
           {projects.map((project, index) => (
-            <Card 
-              key={index} 
-              className="bg-card/50 backdrop-blur-sm border-border/50 hover-lift group cursor-pointer"
-            >
-              <CardHeader>
-                <div className="flex items-start justify-between mb-2">
-                  <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                    <project.icon className="w-6 h-6" />
-                  </div>
-                  <span className="text-sm text-muted-foreground font-mono">{project.period}</span>
-                </div>
-                <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                  {project.title}
-                </CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  {project.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 mb-4">
-                  {project.achievements.map((achievement, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <span className="text-primary mt-1">▹</span>
-                      {achievement}
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag, i) => (
-                    <Badge 
-                      key={i} 
-                      variant="secondary" 
-                      className="bg-secondary/50 hover:bg-primary/20 transition-colors"
+            <motion.div key={index} variants={cardVariants}>
+              <Card className="bg-card/50 backdrop-blur-sm border-border/50 group cursor-pointer h-full overflow-hidden relative">
+                {/* Hover gradient overlay */}
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                />
+                
+                <CardHeader className="relative z-10">
+                  <div className="flex items-start justify-between mb-2">
+                    <motion.div 
+                      className="p-3 rounded-xl bg-primary/10 text-primary"
+                      whileHover={{ rotate: 360, scale: 1.1 }}
+                      transition={{ duration: 0.5 }}
                     >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                      <project.icon className="w-6 h-6" />
+                    </motion.div>
+                    <span className="text-sm text-muted-foreground font-mono">{project.period}</span>
+                  </div>
+                  <CardTitle className="text-xl group-hover:text-primary transition-colors duration-300">
+                    {project.title}
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">
+                    {project.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="relative z-10">
+                  <ul className="space-y-2 mb-4">
+                    {project.achievements.map((achievement, i) => (
+                      <motion.li 
+                        key={i} 
+                        className="flex items-start gap-2 text-sm text-muted-foreground"
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                      >
+                        <motion.span 
+                          className="text-primary mt-1"
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+                        >
+                          ▹
+                        </motion.span>
+                        {achievement}
+                      </motion.li>
+                    ))}
+                  </ul>
+                  <div className="flex flex-wrap gap-2">
+                    {project.tags.map((tag, i) => (
+                      <motion.div
+                        key={i}
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ type: "spring", stiffness: 400 }}
+                      >
+                        <Badge 
+                          variant="secondary" 
+                          className="bg-secondary/50 hover:bg-primary/20 transition-colors"
+                        >
+                          {tag}
+                        </Badge>
+                      </motion.div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

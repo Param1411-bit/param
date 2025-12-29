@@ -1,4 +1,5 @@
-import { Briefcase } from "lucide-react";
+import { Briefcase, Award } from "lucide-react";
+import { motion } from "framer-motion";
 
 const experiences = [
   {
@@ -6,93 +7,185 @@ const experiences = [
     company: "ThePetNest",
     period: "Nov 2024 – Jan 2025",
     achievements: [
-      "Analyzed 150+ leads; improved qualification accuracy by 20%",
-      "Optimized outreach; increased engagement by 30%",
-      "Streamlined CRM follow-ups; improved response rate by 25%"
+      "Analyzed market trends, customer needs, and competing platforms",
+      "Managed leads, evaluated conversion funnels, and prepared weekly metrics",
+      "Supported onboarding, communication, and CRM-like activities",
+      "Prepared datasets, reports, and insights for strategy and decision-making"
     ]
   },
   {
     title: "Full-Stack Developer",
     company: "IEEE Bombay Section",
-    period: "Sep 2023 – Oct 2023",
+    period: "Sept 2023 – Oct 2023",
     achievements: [
-      "Delivered web modules used by 300+ users",
-      "Produced 10+ technical workflows to speed onboarding",
-      "Coordinated cross-functional feature rollouts"
+      "Maintained structured documentation and technical records",
+      "Collaborated with stakeholders to define project expectations",
+      "Worked with diverse teams, improving communication and coordination"
     ]
   },
   {
-    title: "Media & Public Relations Intern",
+    title: "Public Relations & Digital Marketing Intern",
     company: "3 Ace Digital",
     period: "Feb 2024 – Mar 2024",
     achievements: [
-      "Managed 5+ campaigns; raised outreach by 40%",
-      "Implemented content calendars and analytics reporting"
+      "Analyzed digital campaign metrics and click-through patterns",
+      "Prepared content calendars and optimization suggestions",
+      "Handled communication, outreach, and coordination"
     ]
+  }
+];
+
+const responsibilities = [
+  {
+    title: "Secretary – Training & Placement Cell",
+    period: "2024 – Present",
+    description: "Managed placement data, student records, recruiter communication, event coordination, and reporting."
   },
   {
-    title: "Campus Ambassador",
-    company: "E-Cell IIT Bombay",
-    period: "Jul 2024 – Aug 2024",
-    achievements: [
-      "Led outreach drives; increased event participation by 20%"
-    ]
+    title: "Public Relations Officer – Pragyaa 2024",
+    period: "2024",
+    description: "Managed media outreach, press releases, stakeholder communication, and data tracking."
+  },
+  {
+    title: "Core Committee – Ingenium 2023",
+    period: "2023",
+    description: "Organized technical competitions, coordinated logistics, and communicated with teams."
   }
 ];
 
 export function Experience() {
   return (
-    <section id="experience" className="py-24 relative">
+    <section id="experience" className="py-24 relative overflow-hidden">
       <div className="absolute inset-0 grid-background opacity-30" />
       
+      {/* Animated orbs */}
+      <motion.div 
+        className="absolute right-0 top-1/3 w-80 h-80 bg-primary/10 rounded-full blur-[100px]"
+        animate={{ 
+          x: [0, -30, 0],
+          scale: [1, 1.2, 1]
+        }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+      />
+      
       <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-16">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             Work <span className="gradient-text">Experience</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Professional experiences across business development, software engineering, and marketing.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-4xl mx-auto">
+          {/* Timeline */}
           <div className="relative">
             {/* Timeline line */}
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-border md:-translate-x-px" />
+            <motion.div 
+              className="absolute left-4 md:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-primary via-accent to-primary/20"
+              initial={{ scaleY: 0 }}
+              whileInView={{ scaleY: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1 }}
+            />
 
             {experiences.map((exp, index) => (
-              <div 
+              <motion.div 
                 key={index}
-                className={`relative flex flex-col md:flex-row gap-4 md:gap-8 mb-12 ${
-                  index % 2 === 0 ? 'md:flex-row-reverse' : ''
-                }`}
+                className="relative flex gap-8 mb-12 pl-12 md:pl-20"
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 {/* Timeline dot */}
-                <div className="absolute left-4 md:left-1/2 w-3 h-3 bg-primary rounded-full -translate-x-1/2 mt-2 ring-4 ring-background" />
+                <motion.div 
+                  className="absolute left-4 md:left-8 w-4 h-4 bg-primary rounded-full -translate-x-1/2 mt-1 ring-4 ring-background"
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 + 0.3, type: "spring" }}
+                >
+                  <motion.div 
+                    className="absolute inset-0 bg-primary rounded-full"
+                    animate={{ scale: [1, 1.5, 1], opacity: [1, 0, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                </motion.div>
 
                 {/* Content */}
-                <div className={`ml-12 md:ml-0 md:w-1/2 ${index % 2 === 0 ? 'md:pr-12 md:text-right' : 'md:pl-12'}`}>
-                  <div className="p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover-lift">
-                    <div className={`flex items-center gap-3 mb-3 ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}>
-                      <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                        <Briefcase className="w-4 h-4" />
-                      </div>
-                      <span className="text-sm font-mono text-muted-foreground">{exp.period}</span>
+                <motion.div 
+                  className="flex-1 p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 group hover:border-primary/30 transition-all duration-300"
+                  whileHover={{ 
+                    y: -5,
+                    boxShadow: "0 20px 40px hsl(var(--primary) / 0.15)"
+                  }}
+                >
+                  <div className="flex flex-wrap items-center gap-3 mb-3">
+                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                      <Briefcase className="w-4 h-4" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-1">{exp.title}</h3>
-                    <p className="text-primary mb-3">{exp.company}</p>
-                    <ul className={`space-y-1 ${index % 2 === 0 ? 'md:text-right' : ''}`}>
-                      {exp.achievements.map((achievement, i) => (
-                        <li key={i} className="text-sm text-muted-foreground">
-                          {achievement}
-                        </li>
-                      ))}
-                    </ul>
+                    <span className="text-sm font-mono text-primary">{exp.period}</span>
                   </div>
-                </div>
-              </div>
+                  <h3 className="text-xl font-semibold mb-1 group-hover:text-primary transition-colors">{exp.title}</h3>
+                  <p className="text-muted-foreground mb-4">{exp.company}</p>
+                  <ul className="space-y-2">
+                    {exp.achievements.map((achievement, i) => (
+                      <motion.li 
+                        key={i} 
+                        className="flex items-start gap-2 text-sm text-muted-foreground"
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.05 }}
+                      >
+                        <span className="text-primary mt-1">▹</span>
+                        {achievement}
+                      </motion.li>
+                    ))}
+                  </ul>
+                </motion.div>
+              </motion.div>
             ))}
           </div>
+
+          {/* Positions of Responsibility */}
+          <motion.div 
+            className="mt-20"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h3 className="text-2xl font-semibold mb-8 flex items-center gap-3">
+              <Award className="w-6 h-6 text-primary" />
+              Positions of Responsibility
+            </h3>
+            <div className="grid md:grid-cols-3 gap-4">
+              {responsibilities.map((pos, index) => (
+                <motion.div
+                  key={index}
+                  className="p-5 rounded-xl bg-card/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-all duration-300"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                >
+                  <span className="text-xs font-mono text-primary">{pos.period}</span>
+                  <h4 className="font-semibold mt-1 mb-2">{pos.title}</h4>
+                  <p className="text-sm text-muted-foreground">{pos.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
