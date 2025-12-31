@@ -23,6 +23,8 @@ import {
   Upload,
   FolderOpen,
   Award,
+  FileText,
+  Download,
 } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
 
@@ -34,6 +36,7 @@ interface HeroData {
   phone: string;
   github: string;
   linkedin: string;
+  specialties?: string[];
 }
 
 interface Experience {
@@ -88,6 +91,8 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState("hero");
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [profileImageUrl, setProfileImageUrl] = useState<string>("");
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [resumeUrl, setResumeUrl] = useState<string>("");
 
   // Data states
   const [hero, setHero] = useState<HeroData>({
@@ -98,6 +103,7 @@ export default function Admin() {
     phone: "",
     github: "",
     linkedin: "",
+    specialties: ["Data Analytics", "Business Analysis", "Data Science"],
   });
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [responsibilities, setResponsibilities] = useState<Responsibility[]>([]);
@@ -149,7 +155,10 @@ export default function Admin() {
         const value = item.value as any;
         switch (item.key) {
           case "hero":
-            setHero(value);
+            setHero({
+              ...value,
+              specialties: value.specialties || ["Data Analytics", "Business Analysis", "Data Science"],
+            });
             break;
           case "experiences":
             setExperiences(value);
@@ -178,6 +187,13 @@ export default function Admin() {
         .getPublicUrl("profile.png");
       
       setProfileImageUrl(imageData.publicUrl + "?t=" + Date.now());
+
+      // Fetch resume
+      const { data: resumeData } = await supabase.storage
+        .from("profile-images")
+        .getPublicUrl("resume.pdf");
+      
+      setResumeUrl(resumeData.publicUrl + "?t=" + Date.now());
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -227,9 +243,53 @@ export default function Admin() {
     }
   };
 
+  const uploadResume = async () => {
+    if (!resumeFile) return;
+
+    setSaving(true);
+    try {
+      const { error } = await supabase.storage
+        .from("profile-images")
+        .upload("resume.pdf", resumeFile, { upsert: true });
+
+      if (error) throw error;
+      
+      setResumeUrl(
+        supabase.storage.from("profile-images").getPublicUrl("resume.pdf").data.publicUrl +
+          "?t=" +
+          Date.now()
+      );
+      setResumeFile(null);
+      toast.success("Resume updated!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to upload resume");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate("/");
+  };
+
+  const addSpecialty = () => {
+    setHero({
+      ...hero,
+      specialties: [...(hero.specialties || []), "New Specialty"],
+    });
+  };
+
+  const removeSpecialty = (index: number) => {
+    const newSpecialties = [...(hero.specialties || [])];
+    newSpecialties.splice(index, 1);
+    setHero({ ...hero, specialties: newSpecialties });
+  };
+
+  const updateSpecialty = (index: number, value: string) => {
+    const newSpecialties = [...(hero.specialties || [])];
+    newSpecialties[index] = value;
+    setHero({ ...hero, specialties: newSpecialties });
   };
 
   const tabs = [
@@ -338,6 +398,44 @@ export default function Admin() {
                     </div>
                   </div>
 
+                  {/* Resume Upload */}
+                  <div className="mb-8 p-4 bg-secondary/30 rounded-lg">
+                    <Label className="mb-2 block flex items-center gap-2">
+                      <FileText className="w-4 h-4" />
+                      Resume (PDF)
+                    </Label>
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1">
+                        <Input
+                          type="file"
+                          accept=".pdf"
+                          onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+                          className="mb-2"
+                        />
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={uploadResume}
+                            disabled={!resumeFile || saving}
+                          >
+                            <Upload className="w-4 h-4 mr-2" />
+                            Upload Resume
+                          </Button>
+                          {resumeUrl && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => window.open(resumeUrl, '_blank')}
+                            >
+                              <Download className="w-4 h-4 mr-2" />
+                              View Current
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <Label htmlFor="name">Name</Label>
@@ -367,6 +465,36 @@ export default function Admin() {
                         rows={4}
                       />
                     </div>
+
+                    {/* Specialty Tags */}
+                    <div className="md:col-span-2">
+                      <div className="flex items-center justify-between mb-2">
+                        <Label>Specialty Tags (shown in hero section)</Label>
+                        <Button size="sm" variant="outline" onClick={addSpecialty}>
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add Tag
+                        </Button>
+                      </div>
+                      <div className="space-y-2">
+                        {hero.specialties?.map((specialty, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <Input
+                              value={specialty}
+                              onChange={(e) => updateSpecialty(index, e.target.value)}
+                              placeholder="e.g., Data Analytics"
+                            />
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => removeSpecialty(index)}
+                            >
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
                     <div>
                       <Label htmlFor="email">Email</Label>
                       <Input

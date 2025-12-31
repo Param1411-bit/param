@@ -160,7 +160,7 @@ export function Hero() {
                 whileHover={{ scale: 1.05 }}
               >
                 <TrendingUp className="w-5 h-5" />
-                Business Intelligence
+                Business Analysis
               </motion.span>
               <span className="text-muted-foreground/50">•</span>
               <motion.span
