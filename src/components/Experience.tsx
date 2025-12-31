@@ -1,7 +1,8 @@
 import { Briefcase, Award } from "lucide-react";
 import { motion } from "framer-motion";
+import { useProfileData, type Experience as ExperienceType, type Responsibility } from "@/hooks/useProfileData";
 
-const experiences = [
+const defaultExperiences: ExperienceType[] = [
   {
     title: "Business Development Intern",
     company: "ThePetNest",
@@ -22,38 +23,26 @@ const experiences = [
       "Collaborated with stakeholders to define project expectations",
       "Worked with diverse teams, improving communication and coordination"
     ]
-  },
-  {
-    title: "Public Relations & Digital Marketing Intern",
-    company: "3 Ace Digital",
-    period: "Feb 2024 – Mar 2024",
-    achievements: [
-      "Analyzed digital campaign metrics and click-through patterns",
-      "Prepared content calendars and optimization suggestions",
-      "Handled communication, outreach, and coordination"
-    ]
   }
 ];
 
-const responsibilities = [
+const defaultResponsibilities: Responsibility[] = [
   {
     title: "Secretary – Training & Placement Cell",
-    period: "2024 – Present",
-    description: "Managed placement data, student records, recruiter communication, event coordination, and reporting."
+    period: "2024 – 2025",
+    description: "Managed the overall placement process at college, coordinated with 65+ companies, facilitated 457+ total offers, handled student records, recruiter communication, and event coordination."
   },
   {
-    title: "Public Relations Officer – Pragyaa 2024",
-    period: "2024",
-    description: "Managed media outreach, press releases, stakeholder communication, and data tracking."
-  },
-  {
-    title: "Core Committee – Ingenium 2023",
-    period: "2023",
-    description: "Organized technical competitions, coordinated logistics, and communicated with teams."
+    title: "Training & Placement Member",
+    period: "2023 – 2025",
+    description: "Supported placement activities, maintained student databases, coordinated campus recruitment drives, and assisted in company onboarding processes."
   }
 ];
 
 export function Experience() {
+  const { data: experiences } = useProfileData<ExperienceType[]>('experiences', defaultExperiences);
+  const { data: responsibilities } = useProfileData<Responsibility[]>('responsibilities', defaultResponsibilities);
+
   return (
     <section id="experience" className="py-24 relative overflow-hidden">
       <div className="absolute inset-0 grid-background opacity-30" />
@@ -168,7 +157,7 @@ export function Experience() {
               <Award className="w-6 h-6 text-primary" />
               Positions of Responsibility
             </h3>
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-2 gap-4">
               {responsibilities.map((pos, index) => (
                 <motion.div
                   key={index}

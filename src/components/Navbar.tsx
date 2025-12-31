@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Settings } from "lucide-react";
 
 const navItems = [
   { label: "Projects", href: "#projects" },
@@ -57,7 +58,12 @@ export function Navbar() {
           </nav>
 
           {/* CTA */}
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center gap-2">
+            <Link to="/auth">
+              <Button variant="ghost" size="sm">
+                <Settings className="w-4 h-4" />
+              </Button>
+            </Link>
             <Button size="sm" onClick={() => scrollToSection("#contact")}>
               Hire Me
             </Button>
