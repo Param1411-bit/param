@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { AnimatedRobot } from "./AnimatedRobot";
 
 interface IntroLoaderProps {
   onComplete: () => void;
@@ -9,7 +8,6 @@ interface IntroLoaderProps {
 export function IntroLoader({ onComplete }: IntroLoaderProps) {
   const [progress, setProgress] = useState(0);
   const [currentPhase, setCurrentPhase] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
   
   const phases = [
     "Initializing Data Pipeline...",
@@ -24,7 +22,6 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
       setProgress(prev => {
         if (prev >= 100) {
           clearInterval(interval);
-          setIsComplete(true);
           setTimeout(() => onComplete(), 400);
           return 100;
         }
@@ -51,9 +48,6 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
     x: 50 + 35 * Math.cos((i * 2 * Math.PI) / 8),
     y: 50 + 35 * Math.sin((i * 2 * Math.PI) / 8),
   }));
-
-  // Calculate diagonal position based on progress
-  const animationProgress = Math.min(progress / 90, 1);
 
   return (
     <AnimatePresence>
@@ -101,28 +95,6 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
           animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         />
-
-        {/* Mechanical module - diagonal movement from top-right to bottom */}
-        {!isComplete && (
-          <div
-            className="fixed z-20 w-28 h-28 md:w-40 md:h-40 lg:w-48 lg:h-48 pointer-events-none"
-            style={{
-              top: `${-5 + animationProgress * 70}%`,
-              right: `${5 + animationProgress * 10}%`,
-              transition: 'none',
-              willChange: 'top, right',
-            }}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
-            >
-              <AnimatedRobot className="w-full h-full" />
-            </motion.div>
-          </div>
-        )}
 
         {/* Main content */}
         <div className="relative z-10 flex flex-col items-center max-w-md mx-auto px-4">
