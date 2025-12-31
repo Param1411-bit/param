@@ -1,14 +1,51 @@
 import { Button } from "@/components/ui/button";
 import { Mail, Github, Linkedin, Phone, Download, ChevronDown, BarChart3, Database, TrendingUp, PieChart } from "lucide-react";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import profileImage from "@/assets/profile-image-ghibli.png";
 
 export function Hero() {
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadResume = async () => {
+    setDownloading(true);
+    try {
+      const { data, error } = await supabase.storage
+        .from("profile-images")
+        .download("resume.pdf");
+
+      if (error) {
+        // If resume not found, show friendly message
+        toast.error("Resume not available yet. Please check back later.");
+        return;
+      }
+
+      // Create blob URL and trigger download
+      const blob = new Blob([data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "Param_Bhatkar_Resume.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("Resume downloaded!");
+    } catch (err) {
+      console.error("Download error:", err);
+      toast.error("Failed to download resume. Please try again.");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const scrollToProjects = () => {
     document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Floating data icons
   const floatingIcons = [
     { Icon: BarChart3, x: "10%", y: "20%", delay: 0 },
     { Icon: Database, x: "85%", y: "15%", delay: 0.5 },
@@ -201,9 +238,15 @@ export function Hero() {
                 </Button>
               </motion.div>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button size="lg" variant="outline" className="gap-2 text-base border-border hover:bg-secondary group">
-                  <Download className="w-5 h-5 group-hover:translate-y-1 transition-transform" />
-                  Download Resume
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="gap-2 text-base border-border hover:bg-secondary group"
+                  onClick={handleDownloadResume}
+                  disabled={downloading}
+                >
+                  <Download className={`w-5 h-5 group-hover:translate-y-1 transition-transform ${downloading ? 'animate-bounce' : ''}`} />
+                  {downloading ? 'Downloading...' : 'Download Resume'}
                 </Button>
               </motion.div>
             </motion.div>
