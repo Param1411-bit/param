@@ -25,12 +25,12 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
         if (prev >= 100) {
           clearInterval(interval);
           setIsComplete(true);
-          setTimeout(() => onComplete(), 800);
+          setTimeout(() => onComplete(), 600);
           return 100;
         }
         return prev + 1;
       });
-    }, 60);
+    }, 55);
 
     return () => clearInterval(interval);
   }, [onComplete]);
@@ -53,13 +53,6 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
     y: 50 + 35 * Math.sin((i * 2 * Math.PI) / 8),
   }));
 
-  // Calculate robot position based on progress (diagonal movement)
-  const robotProgress = Math.min(progress / 80, 1); // Complete movement at 80%
-  const startX = 85; // Start from right side (percentage)
-  const startY = -20; // Start above screen
-  const endX = 75; // End position X
-  const endY = 70; // End position Y (percentage from top)
-
   return (
     <AnimatePresence>
       <motion.div
@@ -71,7 +64,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
         <div className="absolute inset-0 grid-background opacity-30" />
         
         {/* Floating data particles */}
-        {[...Array(50)].map((_, i) => (
+        {[...Array(40)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 rounded-full"
@@ -115,46 +108,73 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         />
 
-        {/* Robot with diagonal animation - positioned absolutely */}
-        {!isComplete && (
-          <motion.div
-            className="absolute z-20 w-32 h-40 md:w-40 md:h-48"
-            style={{
-              right: `${startX - (startX - endX) * robotProgress}%`,
-              top: `${startY + (endY - startY) * robotProgress}%`,
-            }}
-            initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1, 
-              rotate: [-10, 5, -10],
-            }}
-            exit={{ opacity: 0, scale: 0.5, y: 50 }}
-            transition={{
-              opacity: { duration: 0.5 },
-              scale: { duration: 0.5 },
-              rotate: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-            }}
-          >
-            <AnimatedRobot className="w-full h-full" />
-            
-            {/* Speech bubble - appears when robot is in position */}
-            {robotProgress > 0.5 && (
+        {/* Robot with diagonal animation - CSS transform based for smooth motion */}
+        <AnimatePresence>
+          {!isComplete && (
+            <motion.div
+              className="fixed z-20 w-24 h-32 md:w-36 md:h-44 lg:w-44 lg:h-52"
+              initial={{ 
+                top: "-15%",
+                right: "5%",
+                opacity: 0,
+                scale: 0.8
+              }}
+              animate={{ 
+                top: "60%",
+                right: "8%",
+                opacity: 1,
+                scale: 1
+              }}
+              exit={{ 
+                opacity: 0,
+                scale: 0.8,
+                transition: { duration: 0.3 }
+              }}
+              transition={{
+                top: { duration: 5, ease: [0.25, 0.46, 0.45, 0.94] },
+                right: { duration: 5, ease: [0.25, 0.46, 0.45, 0.94] },
+                opacity: { duration: 0.5 },
+                scale: { duration: 0.5 }
+              }}
+              style={{ 
+                transform: "translateY(-50%)",
+                willChange: "transform, top, right"
+              }}
+            >
+              {/* Subtle floating animation while moving */}
               <motion.div
-                className="absolute -left-24 md:-left-32 top-4 bg-white text-gray-900 px-3 py-2 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap shadow-xl"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: "spring", damping: 10 }}
+                className="w-full h-full"
+                animate={{ 
+                  y: [0, -8, 0],
+                  rotate: [-2, 2, -2]
+                }}
+                transition={{ 
+                  duration: 3, 
+                  repeat: Infinity, 
+                  ease: "easeInOut" 
+                }}
               >
-                Welcome! 👋
-                <div className="absolute right-[-8px] top-3 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[8px] border-l-white" />
+                <AnimatedRobot className="w-full h-full" />
               </motion.div>
-            )}
-          </motion.div>
-        )}
+              
+              {/* Status text bubble - appears midway through animation */}
+              {progress > 40 && (
+                <motion.div
+                  className="absolute -left-20 md:-left-28 top-6 bg-slate-800/90 backdrop-blur-sm text-cyan-400 px-3 py-1.5 rounded-lg text-xs md:text-sm font-medium whitespace-nowrap border border-cyan-500/20"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: "spring", damping: 15, stiffness: 300 }}
+                >
+                  Welcome
+                  <div className="absolute right-[-6px] top-3 w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-l-[6px] border-l-slate-800/90" />
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Main content container */}
-        <div className="relative z-10 flex flex-col items-center">
+        <div className="relative z-10 flex flex-col items-center max-w-md mx-auto px-4">
           
           {/* Animated network graph */}
           <motion.div
@@ -222,7 +242,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
                 cy="50"
                 r="45"
                 fill="none"
-                stroke="url(#gradient)"
+                stroke="url(#loaderGradient)"
                 strokeWidth="1"
                 strokeDasharray="10 5"
                 animate={{ rotate: 360 }}
@@ -231,7 +251,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
               />
 
               <defs>
-                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient id="loaderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="hsl(var(--primary))" />
                   <stop offset="100%" stopColor="hsl(var(--accent))" />
                 </linearGradient>
@@ -287,7 +307,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
 
           {/* Name reveal */}
           <motion.h1
-            className="text-4xl md:text-6xl font-bold mb-4 gradient-text"
+            className="text-4xl md:text-6xl font-bold mb-4 gradient-text text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
@@ -297,7 +317,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
 
           {/* Title */}
           <motion.p
-            className="text-lg md:text-xl text-muted-foreground mb-8"
+            className="text-lg md:text-xl text-muted-foreground mb-8 text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
@@ -362,7 +382,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
             </motion.div>
           ))}
         </div>
-        <div className="absolute right-4 top-0 bottom-0 w-8 overflow-hidden opacity-20">
+        <div className="absolute right-4 top-0 bottom-0 w-8 overflow-hidden opacity-20 pointer-events-none">
           {[...Array(20)].map((_, i) => (
             <motion.div
               key={i}
