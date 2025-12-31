@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import robotImage from "@/assets/robot.png";
+import robotImage from "@/assets/robot-mascot.png";
 
 interface IntroLoaderProps {
   onComplete: () => void;
@@ -10,6 +10,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
   const [progress, setProgress] = useState(0);
   const [currentPhase, setCurrentPhase] = useState(0);
   const [showRobot, setShowRobot] = useState(false);
+  const [robotLanded, setRobotLanded] = useState(false);
   
   const phases = [
     "Initializing Data Pipeline...",
@@ -21,7 +22,8 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
 
   useEffect(() => {
     // Show robot after a brief delay
-    const robotTimer = setTimeout(() => setShowRobot(true), 300);
+    const robotTimer = setTimeout(() => setShowRobot(true), 500);
+    const landedTimer = setTimeout(() => setRobotLanded(true), 1500);
     
     const interval = setInterval(() => {
       setProgress(prev => {
@@ -37,6 +39,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
     return () => {
       clearInterval(interval);
       clearTimeout(robotTimer);
+      clearTimeout(landedTimer);
     };
   }, [onComplete]);
 
@@ -113,66 +116,94 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         />
 
-        {/* Robot dropping from top */}
-        {showRobot && (
-          <motion.div
-            className="absolute top-8 right-8 md:top-12 md:right-16 z-20"
-            initial={{ y: -300, rotate: -20, opacity: 0 }}
-            animate={{ y: 0, rotate: 0, opacity: 1 }}
-            transition={{ 
-              type: "spring", 
-              damping: 10, 
-              stiffness: 80,
-              duration: 1 
-            }}
-          >
-            <motion.div
-              className="relative"
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            >
-              {/* Robot image */}
-              <div className="relative w-24 h-24 md:w-32 md:h-32">
-                <img
-                  src={robotImage}
-                  alt="Welcome Robot"
-                  className="w-full h-full object-contain drop-shadow-[0_0_20px_rgba(0,212,255,0.5)]"
-                />
-                
-                {/* Blinking eyes overlay */}
-                <motion.div
-                  className="absolute top-[26%] left-[28%] w-[12%] h-[8%] bg-[#0a1628] rounded-full"
-                  animate={{ scaleY: [1, 0.1, 1] }}
-                  transition={{ duration: 0.15, repeat: Infinity, repeatDelay: 2.5 }}
-                />
-                <motion.div
-                  className="absolute top-[26%] right-[28%] w-[12%] h-[8%] bg-[#0a1628] rounded-full"
-                  animate={{ scaleY: [1, 0.1, 1] }}
-                  transition={{ duration: 0.15, repeat: Infinity, repeatDelay: 2.5 }}
-                />
-              </div>
-
-              {/* Speech bubble */}
-              <motion.div
-                className="absolute -left-28 md:-left-36 top-1/2 -translate-y-1/2 bg-white text-background px-3 py-2 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap shadow-lg"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.8, type: "spring", damping: 10 }}
-              >
-                Welcome! 👋
-                {/* Speech bubble tail */}
-                <div className="absolute right-[-8px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-l-[10px] border-l-white" />
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        )}
-
         {/* Main content container */}
         <div className="relative z-10 flex flex-col items-center">
           
-          {/* Animated network graph */}
+          {/* Robot dropping from top - centered and large */}
+          {showRobot && (
+            <motion.div
+              className="relative mb-6"
+              initial={{ y: -600, rotate: -15, opacity: 0 }}
+              animate={{ y: 0, rotate: 0, opacity: 1 }}
+              transition={{ 
+                type: "spring", 
+                damping: 12, 
+                stiffness: 60,
+                duration: 1.2 
+              }}
+            >
+              <motion.div
+                className="relative"
+                animate={robotLanded ? { y: [0, -15, 0] } : {}}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                {/* Robot image - large size */}
+                <div className="relative w-48 h-48 md:w-64 md:h-64">
+                  <img
+                    src={robotImage}
+                    alt="Welcome Robot"
+                    className="w-full h-full object-contain drop-shadow-[0_0_30px_rgba(0,212,255,0.6)]"
+                  />
+                  
+                  {/* Blinking eyes overlay - positioned for the robot's eyes */}
+                  <motion.div
+                    className="absolute top-[22%] left-[30%] w-[14%] h-[10%] bg-[#0d1117] rounded-full"
+                    animate={{ scaleY: [1, 0.1, 1] }}
+                    transition={{ duration: 0.15, repeat: Infinity, repeatDelay: 3 }}
+                  />
+                  <motion.div
+                    className="absolute top-[22%] right-[30%] w-[14%] h-[10%] bg-[#0d1117] rounded-full"
+                    animate={{ scaleY: [1, 0.1, 1] }}
+                    transition={{ duration: 0.15, repeat: Infinity, repeatDelay: 3 }}
+                  />
+                </div>
+
+                {/* Speech bubble - appears after landing */}
+                <motion.div
+                  className="absolute -right-4 md:-right-8 -top-2 bg-white text-gray-900 px-4 py-2 rounded-2xl text-sm md:text-base font-bold whitespace-nowrap shadow-xl"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={robotLanded ? { scale: 1, opacity: 1 } : {}}
+                  transition={{ delay: 0.3, type: "spring", damping: 10 }}
+                >
+                  Welcome! 👋
+                  {/* Speech bubble tail */}
+                  <div className="absolute left-4 -bottom-2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] border-t-white" />
+                </motion.div>
+
+                {/* Sparkle effects around robot */}
+                {robotLanded && [0, 1, 2, 3].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute"
+                    style={{
+                      top: `${20 + Math.random() * 60}%`,
+                      left: `${Math.random() * 100}%`,
+                    }}
+                    animate={{
+                      scale: [0, 1, 0],
+                      opacity: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      delay: i * 0.4,
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z"
+                        fill="#00d4ff"
+                      />
+                    </svg>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </motion.div>
+          )}
+
+          {/* Animated network graph - smaller now */}
           <motion.div
-            className="relative w-40 h-40 mb-8"
+            className="relative w-28 h-28 md:w-36 md:h-36 mb-6"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
@@ -273,7 +304,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
 
           {/* Bar chart visualization */}
           <motion.div 
-            className="flex items-end gap-1 h-16 mb-8"
+            className="flex items-end gap-1 h-12 mb-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -287,7 +318,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
                 }}
                 initial={{ height: 0 }}
                 animate={{ 
-                  height: [0, point.height, point.height * 0.6, point.height * 0.9],
+                  height: [0, point.height * 0.8, point.height * 0.5, point.height * 0.7],
                 }}
                 transition={{
                   duration: 1.5,
@@ -301,7 +332,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
 
           {/* Name reveal */}
           <motion.h1
-            className="text-4xl md:text-6xl font-bold mb-4 gradient-text"
+            className="text-3xl md:text-5xl font-bold mb-3 gradient-text"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
@@ -311,7 +342,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
 
           {/* Title */}
           <motion.p
-            className="text-lg md:text-xl text-muted-foreground mb-8"
+            className="text-base md:text-lg text-muted-foreground mb-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
@@ -322,7 +353,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
           {/* Phase text */}
           <motion.p
             key={currentPhase}
-            className="text-sm text-primary font-mono mb-6"
+            className="text-sm text-primary font-mono mb-4"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -332,7 +363,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
           </motion.p>
 
           {/* Progress bar */}
-          <div className="w-64 md:w-80 h-1 bg-muted rounded-full overflow-hidden">
+          <div className="w-56 md:w-72 h-1 bg-muted rounded-full overflow-hidden">
             <motion.div
               className="h-full rounded-full"
               style={{
@@ -346,7 +377,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
 
           {/* Progress percentage */}
           <motion.span
-            className="text-xs text-muted-foreground font-mono mt-3"
+            className="text-xs text-muted-foreground font-mono mt-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
