@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Mail, Github, Linkedin, Phone, Download, ChevronDown, BarChart3, Database, TrendingUp, PieChart } from "lucide-react";
 import { motion } from "framer-motion";
-import profileImage from "@/assets/profile-image.jpeg";
+import profileImage from "@/assets/profile-image-ghibli.png";
 
 export function Hero() {
   const scrollToProjects = () => {
