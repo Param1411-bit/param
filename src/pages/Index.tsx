@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { Projects } from "@/components/Projects";
@@ -6,20 +8,46 @@ import { Experience } from "@/components/Experience";
 import { Education } from "@/components/Education";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
+import { IntroLoader } from "@/components/IntroLoader";
 
 const Index = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Prevent scrolling while loading
+    if (isLoading) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isLoading]);
+
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-      <main>
-        <Hero />
-        <Projects />
-        <Skills />
-        <Experience />
-        <Education />
-        <Contact />
-      </main>
-      <Footer />
+      <AnimatePresence mode="wait">
+        {isLoading && (
+          <IntroLoader onComplete={() => setIsLoading(false)} />
+        )}
+      </AnimatePresence>
+      
+      {!isLoading && (
+        <>
+          <Navbar />
+          <main>
+            <Hero />
+            <Projects />
+            <Skills />
+            <Experience />
+            <Education />
+            <Contact />
+          </main>
+          <Footer />
+        </>
+      )}
     </div>
   );
 };
