@@ -14,25 +14,9 @@ export function Contact() {
     <section id="contact" className="py-24 relative overflow-hidden">
       <div className="absolute inset-0 grid-background opacity-30" />
       
-      {/* Animated background orbs */}
-      <motion.div 
-        className="absolute bottom-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[150px]"
-        animate={{ 
-          x: [-20, 20, -20],
-          y: [-20, 20, -20],
-          scale: [1, 1.1, 1]
-        }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div 
-        className="absolute top-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-[150px]"
-        animate={{ 
-          x: [20, -20, 20],
-          y: [20, -20, 20],
-          scale: [1.1, 1, 1.1]
-        }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-      />
+      {/* Static background orbs - reduced for performance */}
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[150px]" />
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-[150px]" />
       
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-3xl mx-auto text-center">

@@ -28,6 +28,9 @@ import {
 } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
 
+// Only this email can access admin
+const ADMIN_EMAIL = "parambhatkar8@gmail.com";
+
 interface HeroData {
   name: string;
   title: string;
@@ -128,6 +131,11 @@ export default function Admin() {
       setSession(session);
       if (!session) {
         navigate("/auth");
+      } else if (session.user?.email !== ADMIN_EMAIL) {
+        // Sign out unauthorized users
+        supabase.auth.signOut();
+        toast.error("Access denied. You are not authorized.");
+        navigate("/");
       }
     });
 
@@ -135,6 +143,10 @@ export default function Admin() {
       setSession(session);
       if (!session) {
         navigate("/auth");
+      } else if (session.user?.email !== ADMIN_EMAIL) {
+        supabase.auth.signOut();
+        toast.error("Access denied. You are not authorized.");
+        navigate("/");
       } else {
         fetchAllData();
       }

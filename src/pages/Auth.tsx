@@ -8,23 +8,31 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Lock, Mail, Loader2, BarChart3 } from "lucide-react";
 
+// Only this email can access admin
+const ADMIN_EMAIL = "parambhatkar8@gmail.com";
+
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
+      if (session && session.user?.email === ADMIN_EMAIL) {
         navigate("/admin");
+      } else if (session && session.user?.email !== ADMIN_EMAIL) {
+        // Sign out unauthorized users
+        supabase.auth.signOut();
+        toast.error("Access denied. You are not authorized.");
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
+      if (session && session.user?.email === ADMIN_EMAIL) {
         navigate("/admin");
+      } else if (session && session.user?.email !== ADMIN_EMAIL) {
+        supabase.auth.signOut();
       }
     });
 
@@ -33,29 +41,23 @@ export default function Auth() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if email is allowed
+    if (email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+      toast.error("Access denied. You are not authorized to access the admin portal.");
+      return;
+    }
+    
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/admin`,
-          },
-        });
-        if (error) throw error;
-        toast.success("Account created! You can now sign in.");
-        setIsSignUp(false);
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-        toast.success("Welcome back!");
-        navigate("/admin");
-      }
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      toast.success("Welcome back, Param!");
+      navigate("/admin");
     } catch (error: any) {
       toast.error(error.message || "Authentication failed");
     } finally {
@@ -94,7 +96,7 @@ export default function Auth() {
           </motion.div>
           <h1 className="text-2xl font-bold mb-2">Admin Portal</h1>
           <p className="text-muted-foreground">
-            {isSignUp ? "Create your admin account" : "Sign in to manage your portfolio"}
+            Sign in to manage your portfolio
           </p>
         </div>
 
@@ -135,23 +137,11 @@ export default function Auth() {
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
-            ) : isSignUp ? (
-              "Create Account"
             ) : (
               "Sign In"
             )}
           </Button>
         </form>
-
-        <div className="mt-6 text-center">
-          <button
-            type="button"
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="text-sm text-muted-foreground hover:text-primary transition-colors"
-          >
-            {isSignUp ? "Already have an account? Sign in" : "Need an account? Sign up"}
-          </button>
-        </div>
 
         <div className="mt-4 text-center">
           <button
