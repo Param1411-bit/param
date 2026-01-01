@@ -42,15 +42,8 @@ export function Education() {
 
   return (
     <section id="education" className="py-24 bg-secondary/20 relative overflow-hidden">
-      {/* Animated background */}
-      <motion.div 
-        className="absolute left-1/4 bottom-0 w-96 h-96 bg-accent/10 rounded-full blur-[120px]"
-        animate={{ 
-          y: [0, -50, 0],
-          opacity: [0.1, 0.2, 0.1]
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-      />
+      {/* Static background - reduced for performance */}
+      <div className="absolute left-1/4 bottom-0 w-96 h-96 bg-accent/10 rounded-full blur-[120px]" />
       
       <div className="container mx-auto px-6 relative z-10">
         <motion.div 

@@ -47,15 +47,8 @@ export function Experience() {
     <section id="experience" className="py-24 relative overflow-hidden">
       <div className="absolute inset-0 grid-background opacity-30" />
       
-      {/* Animated orbs */}
-      <motion.div 
-        className="absolute right-0 top-1/3 w-80 h-80 bg-primary/10 rounded-full blur-[100px]"
-        animate={{ 
-          x: [0, -30, 0],
-          scale: [1, 1.2, 1]
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-      />
+      {/* Static orb - reduced for performance */}
+      <div className="absolute right-0 top-1/3 w-80 h-80 bg-primary/10 rounded-full blur-[100px]" />
       
       <div className="container mx-auto px-6 relative z-10">
         <motion.div 

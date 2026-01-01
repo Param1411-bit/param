@@ -1,11 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Brain, Sun, Droplets, BarChart3 } from "lucide-react";
+import { Brain, Sun, Droplets, BarChart3, Database, TrendingUp, Cpu, Settings } from "lucide-react";
 import { motion } from "framer-motion";
+import { useProfileData, type Project } from "@/hooks/useProfileData";
+import { LucideIcon } from "lucide-react";
 
-const projects = [
+const defaultProjects: Project[] = [
   {
-    icon: Brain,
     title: "AI-Based Fault Detection & Predictive Analysis System",
     period: "Python, ML, MATLAB",
     description: "Machine learning models for predictive maintenance with data engineering and analytical insights.",
@@ -17,7 +18,6 @@ const projects = [
     tags: ["Python", "Machine Learning", "MATLAB", "Data Engineering"]
   },
   {
-    icon: Droplets,
     title: "Residual Chlorine Detection – Data Monitoring & Analytics",
     period: "IoT, Python, Excel",
     description: "IoT-based water quality monitoring with dashboards and time-series analysis.",
@@ -29,7 +29,6 @@ const projects = [
     tags: ["IoT", "Python", "Excel", "Data Visualization"]
   },
   {
-    icon: Sun,
     title: "MPPT Performance Modelling & Optimization",
     period: "MATLAB, Data Analysis",
     description: "PV performance analysis with statistical summaries and energy-efficiency optimization.",
@@ -41,7 +40,6 @@ const projects = [
     tags: ["MATLAB", "Simulink", "Solar PV", "Optimization"]
   },
   {
-    icon: BarChart3,
     title: "Business Analytics & Lead Management",
     period: "Excel, Power BI",
     description: "End-to-end lead analytics and conversion funnel optimization for business development.",
@@ -54,44 +52,37 @@ const projects = [
   }
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15
-    }
-  }
+// Icon mapping for projects
+const iconMap: Record<string, LucideIcon> = {
+  "AI-Based": Brain,
+  "Residual": Droplets,
+  "MPPT": Sun,
+  "Business": BarChart3,
+  "Real-Time": Database,
+  "Toll": Database,
+  "Resume": Cpu,
+  "HR": TrendingUp,
+  "default": Settings
 };
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 50, scale: 0.9 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    scale: 1,
-    transition: {
-      type: "spring" as const,
-      stiffness: 100,
-      damping: 15
+const getProjectIcon = (title: string): LucideIcon => {
+  for (const [key, icon] of Object.entries(iconMap)) {
+    if (title.toLowerCase().includes(key.toLowerCase())) {
+      return icon;
     }
   }
+  return iconMap.default;
 };
 
 export function Projects() {
+  const { data: projects } = useProfileData<Project[]>('projects', defaultProjects);
+
   return (
     <section id="projects" className="py-24 relative overflow-hidden">
       <div className="absolute inset-0 grid-background opacity-30" />
       
-      {/* Animated orbs */}
-      <motion.div 
-        className="absolute top-20 right-20 w-72 h-72 bg-primary/10 rounded-full blur-[100px]"
-        animate={{ 
-          x: [0, 50, 0],
-          y: [0, -30, 0],
-        }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-      />
+      {/* Static orb - reduced animation for performance */}
+      <div className="absolute top-20 right-20 w-72 h-72 bg-primary/10 rounded-full blur-[100px]" />
       
       <div className="container mx-auto px-6 relative z-10">
         <motion.div 
@@ -109,82 +100,61 @@ export function Projects() {
           </p>
         </motion.div>
 
-        <motion.div 
-          className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          {projects.map((project, index) => (
-            <motion.div key={index} variants={cardVariants}>
-              <Card className="bg-card/50 backdrop-blur-sm border-border/50 group cursor-pointer h-full overflow-hidden relative">
-                {/* Hover gradient overlay */}
-                <motion.div 
-                  className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                />
-                
-                <CardHeader className="relative z-10">
-                  <div className="flex items-start justify-between mb-2">
-                    <motion.div 
-                      className="p-3 rounded-xl bg-primary/10 text-primary"
-                      whileHover={{ rotate: 360, scale: 1.1 }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <project.icon className="w-6 h-6" />
-                    </motion.div>
-                    <span className="text-sm text-muted-foreground font-mono">{project.period}</span>
-                  </div>
-                  <CardTitle className="text-xl group-hover:text-primary transition-colors duration-300">
-                    {project.title}
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    {project.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="relative z-10">
-                  <ul className="space-y-2 mb-4">
-                    {project.achievements.map((achievement, i) => (
-                      <motion.li 
-                        key={i} 
-                        className="flex items-start gap-2 text-sm text-muted-foreground"
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: i * 0.1 }}
-                      >
-                        <motion.span 
-                          className="text-primary mt-1"
-                          animate={{ scale: [1, 1.2, 1] }}
-                          transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          {projects.map((project, index) => {
+            const IconComponent = getProjectIcon(project.title);
+            return (
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+              >
+                <Card className="bg-card/50 backdrop-blur-sm border-border/50 group cursor-pointer h-full overflow-hidden relative hover:border-primary/30 transition-colors duration-300">
+                  <CardHeader className="relative z-10">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="p-3 rounded-xl bg-primary/10 text-primary">
+                        <IconComponent className="w-6 h-6" />
+                      </div>
+                      <span className="text-sm text-muted-foreground font-mono">{project.period}</span>
+                    </div>
+                    <CardTitle className="text-xl group-hover:text-primary transition-colors duration-300">
+                      {project.title}
+                    </CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      {project.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="relative z-10">
+                    <ul className="space-y-2 mb-4">
+                      {project.achievements.map((achievement, i) => (
+                        <li 
+                          key={i} 
+                          className="flex items-start gap-2 text-sm text-muted-foreground"
                         >
-                          ▹
-                        </motion.span>
-                        {achievement}
-                      </motion.li>
-                    ))}
-                  </ul>
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.map((tag, i) => (
-                      <motion.div
-                        key={i}
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ type: "spring", stiffness: 400 }}
-                      >
+                          <span className="text-primary mt-1">▹</span>
+                          {achievement}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="flex flex-wrap gap-2">
+                      {project.tags.map((tag, i) => (
                         <Badge 
+                          key={i}
                           variant="secondary" 
                           className="bg-secondary/50 hover:bg-primary/20 transition-colors"
                         >
                           {tag}
                         </Badge>
-                      </motion.div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </motion.div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

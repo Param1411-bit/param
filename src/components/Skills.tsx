@@ -32,11 +32,8 @@ export function Skills() {
 
   return (
     <section id="skills" className="py-24 bg-secondary/20 relative overflow-hidden">
-      <motion.div 
-        className="absolute -left-20 top-1/2 w-96 h-96 bg-accent/10 rounded-full blur-[120px]"
-        animate={{ y: [-50, 50, -50], scale: [1, 1.1, 1] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-      />
+      {/* Static orb - reduced for performance */}
+      <div className="absolute -left-20 top-1/2 w-96 h-96 bg-accent/10 rounded-full blur-[120px]" />
       
       <div className="container mx-auto px-6 relative z-10">
         <motion.div 
