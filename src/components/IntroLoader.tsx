@@ -247,7 +247,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
 
           {/* Name with staggered animation */}
           <motion.h1
-            className="text-4xl md:text-6xl font-bold mb-3 gradient-text text-center"
+            className="text-3xl sm:text-4xl md:text-6xl font-bold mb-3 gradient-text text-center whitespace-nowrap"
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
