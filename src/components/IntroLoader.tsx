@@ -36,15 +36,32 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
     setCurrentPhase(Math.min(phaseIndex, phases.length - 1));
   }, [progress, phases.length]);
 
-  // Generate star particles
-  const stars = Array.from({ length: 80 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 2 + 1,
-    duration: Math.random() * 3 + 2,
-    delay: Math.random() * 2,
-  }));
+  // Generate sphere stars that explode outward
+  const sphereStars = Array.from({ length: 120 }, (_, i) => {
+    // Random angle for sphere distribution
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    
+    // Final position (spread across screen)
+    const finalX = 50 + (Math.random() - 0.5) * 100;
+    const finalY = 50 + (Math.random() - 0.5) * 100;
+    
+    // Initial sphere position (clustered in center)
+    const sphereRadius = 5 + Math.random() * 3;
+    const initialX = 50 + Math.sin(phi) * Math.cos(theta) * sphereRadius;
+    const initialY = 50 + Math.sin(phi) * Math.sin(theta) * sphereRadius;
+    
+    return {
+      id: i,
+      initialX,
+      initialY,
+      finalX,
+      finalY,
+      size: Math.random() * 2.5 + 0.5,
+      delay: Math.random() * 0.8,
+      duration: 1.5 + Math.random() * 1,
+    };
+  });
 
   return (
     <AnimatePresence>
@@ -53,28 +70,34 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
         exit={{ opacity: 0, scale: 1.1 }}
         transition={{ duration: 0.6, ease: "easeInOut" }}
       >
-        {/* Star particles - twinkling dots like stars */}
+        {/* Sphere of stars that explodes outward */}
         <div className="absolute inset-0 overflow-hidden">
-          {stars.map((star) => (
+          {sphereStars.map((star) => (
             <motion.div
               key={star.id}
               className="absolute rounded-full bg-white"
               style={{
-                left: `${star.x}%`,
-                top: `${star.y}%`,
                 width: star.size,
                 height: star.size,
-                boxShadow: `0 0 ${star.size * 3}px rgba(255, 255, 255, 0.6), 0 0 ${star.size * 6}px rgba(147, 51, 234, 0.3)`,
+                boxShadow: `0 0 ${star.size * 4}px rgba(255, 255, 255, 0.8), 0 0 ${star.size * 8}px rgba(147, 51, 234, 0.5)`,
+              }}
+              initial={{
+                left: `${star.initialX}%`,
+                top: `${star.initialY}%`,
+                scale: 0,
+                opacity: 0,
               }}
               animate={{
-                opacity: [0.3, 1, 0.3],
-                scale: [1, 1.3, 1],
+                left: [`${star.initialX}%`, `${star.initialX}%`, `${star.finalX}%`],
+                top: [`${star.initialY}%`, `${star.initialY}%`, `${star.finalY}%`],
+                scale: [0, 1.5, 1],
+                opacity: [0, 1, 0.7],
               }}
               transition={{
-                duration: star.duration,
+                duration: star.duration + 1,
                 delay: star.delay,
-                repeat: Infinity,
-                ease: "easeInOut",
+                times: [0, 0.3, 1],
+                ease: "easeOut",
               }}
             />
           ))}
