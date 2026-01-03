@@ -36,6 +36,16 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
     setCurrentPhase(Math.min(phaseIndex, phases.length - 1));
   }, [progress, phases.length]);
 
+  // Generate star particles
+  const stars = Array.from({ length: 80 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 2 + 1,
+    duration: Math.random() * 3 + 2,
+    delay: Math.random() * 2,
+  }));
+
   return (
     <AnimatePresence>
       <motion.div
@@ -43,11 +53,38 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
         exit={{ opacity: 0, scale: 1.1 }}
         transition={{ duration: 0.6, ease: "easeInOut" }}
       >
+        {/* Star particles - twinkling dots like stars */}
+        <div className="absolute inset-0 overflow-hidden">
+          {stars.map((star) => (
+            <motion.div
+              key={star.id}
+              className="absolute rounded-full bg-white"
+              style={{
+                left: `${star.x}%`,
+                top: `${star.y}%`,
+                width: star.size,
+                height: star.size,
+                boxShadow: `0 0 ${star.size * 3}px rgba(255, 255, 255, 0.6), 0 0 ${star.size * 6}px rgba(147, 51, 234, 0.3)`,
+              }}
+              animate={{
+                opacity: [0.3, 1, 0.3],
+                scale: [1, 1.3, 1],
+              }}
+              transition={{
+                duration: star.duration,
+                delay: star.delay,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          ))}
+        </div>
+
         {/* Animated grid background */}
         <motion.div 
-          className="absolute inset-0 grid-background opacity-30"
+          className="absolute inset-0 grid-background opacity-20"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.3 }}
+          animate={{ opacity: 0.2 }}
           transition={{ duration: 1 }}
         />
         
