@@ -27,6 +27,7 @@ import {
   Download,
 } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
+import { validateData } from "@/lib/validation";
 
 // Only this email can access admin
 const ADMIN_EMAIL = "parambhatkar8@gmail.com";
@@ -214,6 +215,13 @@ export default function Admin() {
   };
 
   const saveData = async (key: string, value: any) => {
+    // Validate data before saving
+    const validation = validateData(key, value);
+    if (!validation.success) {
+      toast.error(`Validation failed: ${validation.error}`);
+      return;
+    }
+
     setSaving(true);
     try {
       const { error } = await supabase
