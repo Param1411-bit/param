@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { Projects } from "@/components/Projects";
@@ -9,6 +9,7 @@ import { Education } from "@/components/Education";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 import { IntroLoader } from "@/components/IntroLoader";
+import { AnimatedCursor } from "@/components/3d/AnimatedCursor";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,15 +37,20 @@ const Index = () => {
       
       {!isLoading && (
         <>
+          <AnimatedCursor />
           <Navbar />
-          <main>
+          <motion.main
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             <Hero />
             <Projects />
             <Skills />
             <Experience />
             <Education />
             <Contact />
-          </main>
+          </motion.main>
           <Footer />
         </>
       )}
