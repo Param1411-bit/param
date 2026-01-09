@@ -9,7 +9,7 @@ import { Education } from "@/components/Education";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 import { IntroLoader } from "@/components/IntroLoader";
-import { AnimatedCursor } from "@/components/3d/AnimatedCursor";
+
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -37,7 +37,7 @@ const Index = () => {
       
       {!isLoading && (
         <>
-          <AnimatedCursor />
+          
           <Navbar />
           <motion.main
             initial={{ opacity: 0 }}
