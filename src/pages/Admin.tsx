@@ -25,9 +25,12 @@ import {
   Award,
   FileText,
   Download,
+  GripVertical,
 } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
 import { validateData } from "@/lib/validation";
+import { SortableList } from "@/components/admin/SortableList";
+import { SortableItem } from "@/components/admin/SortableItem";
 
 // Only this email can access admin
 const ADMIN_EMAIL = "parambhatkar8@gmail.com";
@@ -489,30 +492,38 @@ export default function Admin() {
                     {/* Specialty Tags */}
                     <div className="md:col-span-2">
                       <div className="flex items-center justify-between mb-2">
-                        <Label>Specialty Tags (shown in hero section)</Label>
+                        <Label>Specialty Tags (shown in hero section) - Drag to reorder</Label>
                         <Button size="sm" variant="outline" onClick={addSpecialty}>
                           <Plus className="w-4 h-4 mr-1" />
                           Add Tag
                         </Button>
                       </div>
-                      <div className="space-y-2">
-                        {hero.specialties?.map((specialty, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <Input
-                              value={specialty}
-                              onChange={(e) => updateSpecialty(index, e.target.value)}
-                              placeholder="e.g., Data Analytics"
-                            />
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => removeSpecialty(index)}
-                            >
-                              <Trash2 className="w-4 h-4 text-destructive" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
+                      <SortableList
+                        items={hero.specialties || []}
+                        onReorder={(newItems) => setHero({ ...hero, specialties: newItems })}
+                        getId={(_, index) => `specialty-${index}`}
+                      >
+                        <div className="space-y-2">
+                          {hero.specialties?.map((specialty, index) => (
+                            <SortableItem key={`specialty-${index}`} id={`specialty-${index}`}>
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  value={specialty}
+                                  onChange={(e) => updateSpecialty(index, e.target.value)}
+                                  placeholder="e.g., Data Analytics"
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => removeSpecialty(index)}
+                                >
+                                  <Trash2 className="w-4 h-4 text-destructive" />
+                                </Button>
+                              </div>
+                            </SortableItem>
+                          ))}
+                        </div>
+                      </SortableList>
                     </div>
 
                     <div>
@@ -579,73 +590,85 @@ export default function Admin() {
                       Add Experience
                     </Button>
                   </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    <GripVertical className="w-4 h-4 inline mr-1" />
+                    Drag items to reorder. The first item will appear at the top.
+                  </p>
 
-                  <div className="space-y-6">
-                    {experiences.map((exp, index) => (
-                      <Card key={index} className="p-4 bg-secondary/30">
-                        <div className="flex justify-between mb-4">
-                          <Badge>Experience {index + 1}</Badge>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              setExperiences(experiences.filter((_, i) => i !== index))
-                            }
-                          >
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          </Button>
-                        </div>
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div>
-                            <Label>Job Title</Label>
-                            <Input
-                              value={exp.title}
-                              onChange={(e) => {
-                                const newExp = [...experiences];
-                                newExp[index].title = e.target.value;
-                                setExperiences(newExp);
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <Label>Company</Label>
-                            <Input
-                              value={exp.company}
-                              onChange={(e) => {
-                                const newExp = [...experiences];
-                                newExp[index].company = e.target.value;
-                                setExperiences(newExp);
-                              }}
-                            />
-                          </div>
-                          <div className="md:col-span-2">
-                            <Label>Period</Label>
-                            <Input
-                              value={exp.period}
-                              onChange={(e) => {
-                                const newExp = [...experiences];
-                                newExp[index].period = e.target.value;
-                                setExperiences(newExp);
-                              }}
-                              placeholder="Jan 2024 – Present"
-                            />
-                          </div>
-                          <div className="md:col-span-2">
-                            <Label>Achievements (one per line)</Label>
-                            <Textarea
-                              value={exp.achievements.join("\n")}
-                              onChange={(e) => {
-                                const newExp = [...experiences];
-                                newExp[index].achievements = e.target.value.split("\n");
-                                setExperiences(newExp);
-                              }}
-                              rows={4}
-                            />
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
+                  <SortableList
+                    items={experiences}
+                    onReorder={setExperiences}
+                    getId={(_, index) => `exp-${index}`}
+                  >
+                    <div className="space-y-6">
+                      {experiences.map((exp, index) => (
+                        <SortableItem key={`exp-${index}`} id={`exp-${index}`}>
+                          <Card className="p-4 bg-secondary/30">
+                            <div className="flex justify-between mb-4">
+                              <Badge>Experience {index + 1}</Badge>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  setExperiences(experiences.filter((_, i) => i !== index))
+                                }
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div>
+                                <Label>Job Title</Label>
+                                <Input
+                                  value={exp.title}
+                                  onChange={(e) => {
+                                    const newExp = [...experiences];
+                                    newExp[index].title = e.target.value;
+                                    setExperiences(newExp);
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <Label>Company</Label>
+                                <Input
+                                  value={exp.company}
+                                  onChange={(e) => {
+                                    const newExp = [...experiences];
+                                    newExp[index].company = e.target.value;
+                                    setExperiences(newExp);
+                                  }}
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <Label>Period</Label>
+                                <Input
+                                  value={exp.period}
+                                  onChange={(e) => {
+                                    const newExp = [...experiences];
+                                    newExp[index].period = e.target.value;
+                                    setExperiences(newExp);
+                                  }}
+                                  placeholder="Jan 2024 – Present"
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <Label>Achievements (one per line)</Label>
+                                <Textarea
+                                  value={exp.achievements.join("\n")}
+                                  onChange={(e) => {
+                                    const newExp = [...experiences];
+                                    newExp[index].achievements = e.target.value.split("\n");
+                                    setExperiences(newExp);
+                                  }}
+                                  rows={4}
+                                />
+                              </div>
+                            </div>
+                          </Card>
+                        </SortableItem>
+                      ))}
+                    </div>
+                  </SortableList>
 
                   <Button
                     className="mt-6"
@@ -676,61 +699,73 @@ export default function Admin() {
                       Add Position
                     </Button>
                   </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    <GripVertical className="w-4 h-4 inline mr-1" />
+                    Drag items to reorder.
+                  </p>
 
-                  <div className="space-y-6">
-                    {responsibilities.map((pos, index) => (
-                      <Card key={index} className="p-4 bg-secondary/30">
-                        <div className="flex justify-between mb-4">
-                          <Badge>Position {index + 1}</Badge>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              setResponsibilities(responsibilities.filter((_, i) => i !== index))
-                            }
-                          >
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          </Button>
-                        </div>
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div>
-                            <Label>Title</Label>
-                            <Input
-                              value={pos.title}
-                              onChange={(e) => {
-                                const newPos = [...responsibilities];
-                                newPos[index].title = e.target.value;
-                                setResponsibilities(newPos);
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <Label>Period</Label>
-                            <Input
-                              value={pos.period}
-                              onChange={(e) => {
-                                const newPos = [...responsibilities];
-                                newPos[index].period = e.target.value;
-                                setResponsibilities(newPos);
-                              }}
-                            />
-                          </div>
-                          <div className="md:col-span-2">
-                            <Label>Description</Label>
-                            <Textarea
-                              value={pos.description}
-                              onChange={(e) => {
-                                const newPos = [...responsibilities];
-                                newPos[index].description = e.target.value;
-                                setResponsibilities(newPos);
-                              }}
-                              rows={3}
-                            />
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
+                  <SortableList
+                    items={responsibilities}
+                    onReorder={setResponsibilities}
+                    getId={(_, index) => `pos-${index}`}
+                  >
+                    <div className="space-y-6">
+                      {responsibilities.map((pos, index) => (
+                        <SortableItem key={`pos-${index}`} id={`pos-${index}`}>
+                          <Card className="p-4 bg-secondary/30">
+                            <div className="flex justify-between mb-4">
+                              <Badge>Position {index + 1}</Badge>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  setResponsibilities(responsibilities.filter((_, i) => i !== index))
+                                }
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div>
+                                <Label>Title</Label>
+                                <Input
+                                  value={pos.title}
+                                  onChange={(e) => {
+                                    const newPos = [...responsibilities];
+                                    newPos[index].title = e.target.value;
+                                    setResponsibilities(newPos);
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <Label>Period</Label>
+                                <Input
+                                  value={pos.period}
+                                  onChange={(e) => {
+                                    const newPos = [...responsibilities];
+                                    newPos[index].period = e.target.value;
+                                    setResponsibilities(newPos);
+                                  }}
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <Label>Description</Label>
+                                <Textarea
+                                  value={pos.description}
+                                  onChange={(e) => {
+                                    const newPos = [...responsibilities];
+                                    newPos[index].description = e.target.value;
+                                    setResponsibilities(newPos);
+                                  }}
+                                  rows={3}
+                                />
+                              </div>
+                            </div>
+                          </Card>
+                        </SortableItem>
+                      ))}
+                    </div>
+                  </SortableList>
 
                   <Button
                     className="mt-6"
@@ -761,82 +796,94 @@ export default function Admin() {
                       Add Education
                     </Button>
                   </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    <GripVertical className="w-4 h-4 inline mr-1" />
+                    Drag items to reorder.
+                  </p>
 
-                  <div className="space-y-6">
-                    {education.map((edu, index) => (
-                      <Card key={index} className="p-4 bg-secondary/30">
-                        <div className="flex justify-between mb-4">
-                          <Badge>Education {index + 1}</Badge>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              setEducation(education.filter((_, i) => i !== index))
-                            }
-                          >
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          </Button>
-                        </div>
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div>
-                            <Label>Degree</Label>
-                            <Input
-                              value={edu.degree}
-                              onChange={(e) => {
-                                const newEdu = [...education];
-                                newEdu[index].degree = e.target.value;
-                                setEducation(newEdu);
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <Label>Institution</Label>
-                            <Input
-                              value={edu.institution}
-                              onChange={(e) => {
-                                const newEdu = [...education];
-                                newEdu[index].institution = e.target.value;
-                                setEducation(newEdu);
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <Label>Period</Label>
-                            <Input
-                              value={edu.period}
-                              onChange={(e) => {
-                                const newEdu = [...education];
-                                newEdu[index].period = e.target.value;
-                                setEducation(newEdu);
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <Label>Grade (optional)</Label>
-                            <Input
-                              value={edu.grade || ""}
-                              onChange={(e) => {
-                                const newEdu = [...education];
-                                newEdu[index].grade = e.target.value;
-                                setEducation(newEdu);
-                              }}
-                            />
-                          </div>
-                          <div className="md:col-span-2">
-                            <Label>Coursework (comma separated)</Label>
-                            <Input
-                              value={edu.coursework?.join(", ") || ""}
-                              onChange={(e) => {
-                                const newEdu = [...education];
-                                newEdu[index].coursework = e.target.value.split(",").map((s) => s.trim());
-                                setEducation(newEdu);
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
+                  <SortableList
+                    items={education}
+                    onReorder={setEducation}
+                    getId={(_, index) => `edu-${index}`}
+                  >
+                    <div className="space-y-6">
+                      {education.map((edu, index) => (
+                        <SortableItem key={`edu-${index}`} id={`edu-${index}`}>
+                          <Card className="p-4 bg-secondary/30">
+                            <div className="flex justify-between mb-4">
+                              <Badge>Education {index + 1}</Badge>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  setEducation(education.filter((_, i) => i !== index))
+                                }
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div>
+                                <Label>Degree</Label>
+                                <Input
+                                  value={edu.degree}
+                                  onChange={(e) => {
+                                    const newEdu = [...education];
+                                    newEdu[index].degree = e.target.value;
+                                    setEducation(newEdu);
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <Label>Institution</Label>
+                                <Input
+                                  value={edu.institution}
+                                  onChange={(e) => {
+                                    const newEdu = [...education];
+                                    newEdu[index].institution = e.target.value;
+                                    setEducation(newEdu);
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <Label>Period</Label>
+                                <Input
+                                  value={edu.period}
+                                  onChange={(e) => {
+                                    const newEdu = [...education];
+                                    newEdu[index].period = e.target.value;
+                                    setEducation(newEdu);
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <Label>Grade (optional)</Label>
+                                <Input
+                                  value={edu.grade || ""}
+                                  onChange={(e) => {
+                                    const newEdu = [...education];
+                                    newEdu[index].grade = e.target.value;
+                                    setEducation(newEdu);
+                                  }}
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <Label>Coursework (comma separated)</Label>
+                                <Input
+                                  value={edu.coursework?.join(", ") || ""}
+                                  onChange={(e) => {
+                                    const newEdu = [...education];
+                                    newEdu[index].coursework = e.target.value.split(",").map((s) => s.trim());
+                                    setEducation(newEdu);
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </Card>
+                        </SortableItem>
+                      ))}
+                    </div>
+                  </SortableList>
 
                   <Button
                     className="mt-6"
@@ -867,84 +914,96 @@ export default function Admin() {
                       Add Project
                     </Button>
                   </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    <GripVertical className="w-4 h-4 inline mr-1" />
+                    Drag items to reorder.
+                  </p>
 
-                  <div className="space-y-6">
-                    {projects.map((project, index) => (
-                      <Card key={index} className="p-4 bg-secondary/30">
-                        <div className="flex justify-between mb-4">
-                          <Badge>Project {index + 1}</Badge>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              setProjects(projects.filter((_, i) => i !== index))
-                            }
-                          >
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          </Button>
-                        </div>
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div>
-                            <Label>Title</Label>
-                            <Input
-                              value={project.title}
-                              onChange={(e) => {
-                                const newProjects = [...projects];
-                                newProjects[index].title = e.target.value;
-                                setProjects(newProjects);
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <Label>Period</Label>
-                            <Input
-                              value={project.period}
-                              onChange={(e) => {
-                                const newProjects = [...projects];
-                                newProjects[index].period = e.target.value;
-                                setProjects(newProjects);
-                              }}
-                            />
-                          </div>
-                          <div className="md:col-span-2">
-                            <Label>Description</Label>
-                            <Textarea
-                              value={project.description}
-                              onChange={(e) => {
-                                const newProjects = [...projects];
-                                newProjects[index].description = e.target.value;
-                                setProjects(newProjects);
-                              }}
-                              rows={2}
-                            />
-                          </div>
-                          <div className="md:col-span-2">
-                            <Label>Achievements (one per line)</Label>
-                            <Textarea
-                              value={project.achievements.join("\n")}
-                              onChange={(e) => {
-                                const newProjects = [...projects];
-                                newProjects[index].achievements = e.target.value.split("\n");
-                                setProjects(newProjects);
-                              }}
-                              rows={3}
-                            />
-                          </div>
-                          <div className="md:col-span-2">
-                            <Label>Tags (comma separated)</Label>
-                            <Input
-                              value={project.tags.join(", ")}
-                              onChange={(e) => {
-                                const newProjects = [...projects];
-                                newProjects[index].tags = e.target.value.split(",").map((s) => s.trim());
-                                setProjects(newProjects);
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
+                  <SortableList
+                    items={projects}
+                    onReorder={setProjects}
+                    getId={(_, index) => `proj-${index}`}
+                  >
+                    <div className="space-y-6">
+                      {projects.map((project, index) => (
+                        <SortableItem key={`proj-${index}`} id={`proj-${index}`}>
+                          <Card className="p-4 bg-secondary/30">
+                            <div className="flex justify-between mb-4">
+                              <Badge>Project {index + 1}</Badge>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  setProjects(projects.filter((_, i) => i !== index))
+                                }
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div>
+                                <Label>Title</Label>
+                                <Input
+                                  value={project.title}
+                                  onChange={(e) => {
+                                    const newProjects = [...projects];
+                                    newProjects[index].title = e.target.value;
+                                    setProjects(newProjects);
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <Label>Period</Label>
+                                <Input
+                                  value={project.period}
+                                  onChange={(e) => {
+                                    const newProjects = [...projects];
+                                    newProjects[index].period = e.target.value;
+                                    setProjects(newProjects);
+                                  }}
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <Label>Description</Label>
+                                <Textarea
+                                  value={project.description}
+                                  onChange={(e) => {
+                                    const newProjects = [...projects];
+                                    newProjects[index].description = e.target.value;
+                                    setProjects(newProjects);
+                                  }}
+                                  rows={2}
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <Label>Achievements (one per line)</Label>
+                                <Textarea
+                                  value={project.achievements.join("\n")}
+                                  onChange={(e) => {
+                                    const newProjects = [...projects];
+                                    newProjects[index].achievements = e.target.value.split("\n");
+                                    setProjects(newProjects);
+                                  }}
+                                  rows={3}
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <Label>Tags (comma separated)</Label>
+                                <Input
+                                  value={project.tags.join(", ")}
+                                  onChange={(e) => {
+                                    const newProjects = [...projects];
+                                    newProjects[index].tags = e.target.value.split(",").map((s) => s.trim());
+                                    setProjects(newProjects);
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </Card>
+                        </SortableItem>
+                      ))}
+                    </div>
+                  </SortableList>
 
                   <Button
                     className="mt-6"
