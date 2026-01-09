@@ -523,13 +523,3 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Hide cursor on custom cursor */
-@media (pointer: fine) {
-  body {
-    cursor: none;
-  }
-  
-  a, button, [role="button"] {
-    cursor: none;
-  }
-}
