@@ -89,7 +89,7 @@ export function Hero() {
       </Suspense>
       
       {/* Animated glowing orbs */}
-      <GlowingOrbs count={6} />
+      <GlowingOrbs count={4} />
       
       {/* Animated grid background */}
       <motion.div 
