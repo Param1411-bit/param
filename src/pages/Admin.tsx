@@ -134,7 +134,7 @@ export default function Admin() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       if (!session) {
-        navigate("/auth");
+        navigate("/pb-portal-x7k9m");
       } else if (session.user?.email !== ADMIN_EMAIL) {
         // Sign out unauthorized users
         supabase.auth.signOut();
@@ -146,7 +146,7 @@ export default function Admin() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (!session) {
-        navigate("/auth");
+        navigate("/pb-portal-x7k9m");
       } else if (session.user?.email !== ADMIN_EMAIL) {
         supabase.auth.signOut();
         toast.error("Access denied. You are not authorized.");
