@@ -20,7 +20,7 @@ export default function Auth() {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session && session.user?.email === ADMIN_EMAIL) {
-        navigate("/admin");
+        navigate("/pb-portal-x7k9m/dashboard");
       } else if (session && session.user?.email !== ADMIN_EMAIL) {
         // Sign out unauthorized users
         supabase.auth.signOut();
@@ -30,7 +30,7 @@ export default function Auth() {
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session && session.user?.email === ADMIN_EMAIL) {
-        navigate("/admin");
+        navigate("/pb-portal-x7k9m/dashboard");
       } else if (session && session.user?.email !== ADMIN_EMAIL) {
         supabase.auth.signOut();
       }
@@ -57,7 +57,7 @@ export default function Auth() {
       });
       if (error) throw error;
       toast.success("Welcome back, Param!");
-      navigate("/admin");
+      navigate("/pb-portal-x7k9m/dashboard");
     } catch (error: any) {
       toast.error(error.message || "Authentication failed");
     } finally {
